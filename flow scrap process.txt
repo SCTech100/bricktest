@@ -1,0 +1,57 @@
+using nodejs puppeteer and cheerio and write-csv
+
+to use run node server.js and write localhost/api/scrap
+
+-> index = 1
+-> url tokopedia = `https://www.tokopedia.com/p/handphone-tablet/handphone?page=${index}`;
+loop when products.length < 100
+
+	get scrap content page 1  and call getproducts function to get object 1 by 1;
+	insert to products 
+if products.length < 100 -> index ++ and loop
+
+else
+
+write csv with data 
+
+
+getting per node element
+async function getProducts(i, $, productGrid) {
+  const productName = $(".css-1bjwylw").eq(i).text();
+  let productPrice = $(".css-o5uqvq").eq(i).text();
+  productPrice = unformatMoney(productPrice);
+  // Name of Product
+  // 2. Description
+  // 3. Image Link
+  // 4. Price
+  // 5. Rating (out of 5 stars)
+  // 6. Name of store or merchant
+  const productLink = $("a", productGrid).attr("href");
+  const productImage = $("img", productGrid).attr("src");
+  const shopLocation = $(".css-vbihp9").eq(i).children().eq(0).text();
+  const shopName = $(".css-vbihp9").eq(i).children().eq(1).text();
+
+  let reviewStars = 0;
+  let nodereviews = $(".css-153qjw7").eq(i).children().children();
+  for (let index = 0; index < nodereviews.length; index++) {
+    var src = nodereviews.eq(index).attr("src");
+    if (
+      src ==
+      "https://assets.tokopedia.net/assets-tokopedia-lite/v2/zeus/kratos/4fede911.svg"
+    ) {
+      reviewStars++;
+    }
+  }
+
+  const colData = {
+    productName,
+    productPrice,
+    productLink,
+    productImage,
+    shopName,
+    shopLocation,
+    reviewStars,
+  };
+
+  return colData;
+}
